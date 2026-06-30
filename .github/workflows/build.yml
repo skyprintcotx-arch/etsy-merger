@@ -1,0 +1,32 @@
+name: Build EtsyMerge.exe
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "merge_app.pyw"
+      - ".github/workflows/build.yml"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyinstaller pypdf pdfplumber
+
+      - name: Build exe
+        run: python -m PyInstaller --onefile --windowed --name EtsyMerge --clean merge_app.pyw
+
+      - name: Upload exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: EtsyMerge
+          path: dist/EtsyMerge.exe
